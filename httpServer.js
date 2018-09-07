@@ -60,9 +60,9 @@ const server = http.createServer((req,res) => {
         }
 
         //UPDATE
-        else if {req.method === ''
+        // else if {req.method === ''
 
-        }
+        // }
     })
 })
 
