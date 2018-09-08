@@ -53,16 +53,31 @@ const server = http.createServer((req,res) => {
                 }
             })
         }
+        //UPDATE
+        else if (req.method === 'PATCH' && req.url === '/pets') {
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk;
+            });
+            req.on('end', () => {
+                let newPet = new Object()
+                newPet.age = req.body.age ? parseInt(req.body.age) : pets[num].age;
+                newPet.kind = req.body.kind ? req.body.kind : pets[num].kind;
+                newPet.name = req.body.name ? req.body.name : pets[num].name;
+                pets[num] = newPet;
+                fs.writeFile('pets.json', JSON.stringify(pets), (err) => {
+                    res.send(pets[num]);
+                })
+            })
+        
+        }
+
+        
         else {
             res.statusCode = 404;
             res.setHeader('Content-Type', 'text/plain');
             res.end('Bad Request');
         }
-
-        //UPDATE
-        // else if {req.method === ''
-
-        // }
     })
 })
 

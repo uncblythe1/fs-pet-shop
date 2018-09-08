@@ -1,4 +1,7 @@
-const fs = require('fs');
+#!/usr/bin/env node
+let fs = require('fs');
+const http = require('http');
+
 
 
 fs.readFile('./pets.json', 'utf8', (err, data)=> {
@@ -24,6 +27,7 @@ fs.readFile('./pets.json', 'utf8', (err, data)=> {
         }
     }
 
+    //create a new pet
     if (command === 'create') {
 
         const age = parseInt(process.argv[3]);
@@ -45,7 +49,52 @@ fs.readFile('./pets.json', 'utf8', (err, data)=> {
             process.exit(1);
         }
     }
+
+    //update an existing pet
+    if (command === 'update') {
+
+        const index = process.argv[3];
+        const age = parseInt(process.argv[4]);
+        const kind = process.argv[5];
+        const name = process.argv[6];
+
+        if(index && age && kind && name) {
+            let updatedPet = {age,kind,name};
+            myPets[index] = updatedPet;
+            fs.writeFile('pets.json', JSON.stringify(myPets), (err) => {
+                if (err) {
+                    throw err;
+                }
+                console.log(myPets[index]);
+            })
+        }
+        else {
+            console.error('Usage: node pets.js update INDEX AGE KIND NAME');
+            process.exit(1);
+        }
+    }
+
+    if(command === 'destroy') {
+        if(index) {
+            const soldPet = myPets.splice(index,1);
+            
+            fs.writeFile('pets.json', JSON.stringify(myPets), (err) => {
+                if (err) {
+                    console.error('Usage: node pets.js destroy INDEX');
+                    process.exit(1);
+                }
+                console.log(soldPet[0]);
+            })
+        }
+        else {
+            console.error('Usage: node pets.js destroy INDEX');
+            process.exit(1);
+        }
+
+    }
     
 })
+
+
 
 
