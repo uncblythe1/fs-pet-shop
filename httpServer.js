@@ -13,6 +13,7 @@ const server = http.createServer((req,res) => {
             let pets = JSON.parse(data);
             let index = req.url.split('/');
             let num = parseInt(index[2]);
+            let body = '';
             
         //GET
         if (req.method === 'GET') {
@@ -31,7 +32,6 @@ const server = http.createServer((req,res) => {
         }
         //POST
         else if (req.method === 'POST' && req.url === `/pets`) {
-            let body = '';
             req.on('data', (chunk) => {
                 body += chunk;
             });
@@ -54,19 +54,21 @@ const server = http.createServer((req,res) => {
             })
         }
         //UPDATE
-        else if (req.method === 'PATCH' && req.url === '/pets') {
-            let body = '';
+        else if (req.method === 'PATCH') {
             req.on('data', (chunk) => {
                 body += chunk;
+                res.end(body);
             });
             req.on('end', () => {
+                let updatedPet = JSON.parse(body);
                 let newPet = new Object()
-                newPet.age = req.body.age ? parseInt(req.body.age) : pets[num].age;
-                newPet.kind = req.body.kind ? req.body.kind : pets[num].kind;
-                newPet.name = req.body.name ? req.body.name : pets[num].name;
+                console.log(pets[num]);
+                newPet.age = updatedPet.age ? parseInt(updatedPet.age) : pets[num].age;
+                newPet.kind = updatedPet.kind ? updatedPet.kind : pets[num].kind;
+                newPet.name = updatedPet.name ? updatedPet.name : pets[num].name;
                 pets[num] = newPet;
                 fs.writeFile('pets.json', JSON.stringify(pets), (err) => {
-                    res.send(pets[num]);
+                    res.end(JSON.stringify(pets[num]));
                 })
             })
         
